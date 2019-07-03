@@ -36,8 +36,6 @@
             data() {return {dataReady: false}},
             computed: {},
             async mounted() {
-              //important switch to qualify the starting of UI element
-              this.dataReady = true;
                 //wait for the loading to complete before displaying
                 await faceapi.loadMtcnnModel('/'),
                 await faceapi.loadFaceRecognitionModel('/')
@@ -50,7 +48,7 @@
                         })
                         .catch((e)=> {
                             console.log(e);
-                        });}
+                        });
                 
                 window.addEventListener('resize', this.onResize)
                 
@@ -69,7 +67,8 @@
                 // minimum face size (in px)to expect: the higher the no., the faster processing will be,
                 // but smaller faces won't be detected
                 minFaceSize: 200
-                },
+                }
+                
                 const mtcnnResults = await faceapi.mtcnn(document.getElementById('inputVideo'), mtcnnForwardParams)
                 //draws the bounding boxes onto the canvas overlaying the videoElement
                 faceapi.drawDetection('overlay', mtcnnResults.map(res => res.faceDetection), { withScore: false })
@@ -106,13 +105,16 @@
                 const results = fullFaceDescriptions.map(fd => faceMatcher.findBestMatch(fd.descriptor))
                 //overlay bounding box for each matched face
                 results.forEach((bestMatch, i) => {
-                  const box = fullFaceDescriptions[i].detection.box
-                  const text = bestMatch.toString()
-                  const drawBox = new faceapi.draw.DrawBox(box, { label: text })
-                  var canvas = document.getElementById("overlay")
-                  drawBox.draw(canvas),
+                    const box = fullFaceDescriptions[i].detection.box
+                    const text = bestMatch.toString()
+                    const drawBox = new faceapi.draw.DrawBox(box, { label: text })
+                    var canvas = document.getElementById("overlay")
+                    drawBox.draw(canvas)},
+                
+                //switch to qualify the starting of UI element
+                this.dataReady = true
                 }
-                },
+            },
 
                 
             destroyed() {
